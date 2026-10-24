@@ -1,38 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { carName, type Car } from "@/lib/cars";
 import { IconWhatsApp } from "./Icons";
+import { whatsappUrl } from "@/lib/contact";
 
 type Status = { kind: "idle" } | { kind: "sending" } | { kind: "ok"; whatsapp: string } | { kind: "error" };
 
-/** Lead / test-drive form → POST /api/contact (email via env) → WhatsApp confirmation link. */
+/** Lead / test-drive form → WhatsApp message to the showroom (no server needed). */
 export default function ContactForm({ cars, defaultCar, compact = false }: { cars: Pick<Car, "slug" | "brand" | "model" | "year">[]; defaultCar?: string; compact?: boolean }) {
-  const locale = useLocale();
   const t = useTranslations("contact");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const today = new Date().toISOString().slice(0, 10);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  /** Static site: no server. The lead is composed in the browser and opened as a WhatsApp message to the showroom. */
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     if (!form.reportValidity()) return;
     setStatus({ kind: "sending" });
     const data = Object.fromEntries(new FormData(form));
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, locale }),
-      });
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error();
-      setStatus({ kind: "ok", whatsapp: json.whatsapp });
-      form.reset();
-    } catch {
-      setStatus({ kind: "error" });
-    }
+    const clean = (v: FormDataEntryValue | undefined, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+    const selected = cars.find((c) => c.slug === clean(data.car, 80));
+    const text = t("waLead", {
+      name: clean(data.name, 80),
+      phone: clean(data.phone, 20),
+      car: selected ? `${selected.brand} ${selected.model} ${selected.year}` : "—",
+      date: clean(data.date, 10) || "—",
+      message: clean(data.message, 1000) || "—",
+    });
+    const url = whatsappUrl(text);
+    form.reset();
+    setStatus({ kind: "ok", whatsapp: url });
   }
 
   const label = "block text-xs font-semibold text-mute";

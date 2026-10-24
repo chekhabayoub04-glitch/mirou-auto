@@ -3,18 +3,11 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+// Static export: the site is served as plain files (GitHub Pages / any static host).
 const nextConfig: NextConfig = {
-  images: {
-    formats: ["image/avif", "image/webp"],
-    deviceSizes: [390, 640, 828, 1080, 1280, 1600, 1920],
-  },
-  async headers() {
-    const immutable = [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }];
-    return [
-      { source: "/media/:path*", headers: immutable },
-      { source: "/cars/:slug/:file(.+\\.(?:webp|avif|jpg|png))", headers: [{ key: "Cache-Control", value: "public, max-age=86400" }] },
-    ];
-  },
+  output: "export",
+  trailingSlash: true,
+  images: { unoptimized: true },
 };
 
 export default withNextIntl(nextConfig);

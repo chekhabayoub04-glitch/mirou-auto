@@ -78,6 +78,10 @@ For a new car, create `public/cars/<slug>/` with at least `exterior.jpg`, then r
 
 Per-page metadata, OpenGraph, `hreflang` (fr / ar / x-default), JSON-LD (`AutoDealer`, `Car` + `Offer`, `BreadcrumbList`), `/sitemap.xml`, `/robots.txt`. Set the real domain in `NEXT_PUBLIC_SITE_URL`.
 
+## Deploy on GitHub Pages (static)
+
+The site is built as a static export (`output: "export"`): no server, no API route. The contact form opens a pre-filled WhatsApp message in the visitor's browser. `.github/workflows/pages.yml` builds and publishes `out/` on every push to `main`. The French home is also copied to the root (`scripts/post-export.mjs`).
+
 ## Deploy on Vercel
 
 1. Push the project to GitHub (the raw video and `design/reference` are git-ignored; `assets/video` outputs are committed).
