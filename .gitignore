@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw source video (large, keep out of git)
+/assets/video/raw/*
+!/assets/video/raw/README.md
+
+# generated mirror of assets/video
+/public/media
+!.env.example
+
+# design references / originals (large, local only)
+/design/reference
+/assets/cars-originals

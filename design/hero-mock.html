@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MHD AUTO — Hero mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Archivo:wght@400;500;600&family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0A0A0B;        /* asphalt base */
+    --surface: #131315;    /* panels */
+    --line: #2A2A2E;       /* hairlines */
+    --bone: #EEEAE3;       /* warm off-white text */
+    --mute: #9A968F;       /* secondary text */
+    --signal: #E8382C;     /* MHD red — from the facade sign & plates */
+    --signal-hi: #FF5B4D;  /* red for small text on dark (AA) */
+    --hex: #DDE6F0;        /* cool hex-light white */
+    --f-display: "Big Shoulders Display", "Cairo", sans-serif;
+    --f-sans: "Archivo", "Cairo", sans-serif;
+    --f-ar: "Cairo", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--ink); color: var(--bone); font-family: var(--f-ar); }
+
+  .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; }
+  .backdrop { position: absolute; inset: -40px; background: url(../public/media/posters/ch1-exterior-blur.webp) center/cover; filter: blur(28px) saturate(.9) brightness(.35); z-index: -3; }
+  .vignette { position: absolute; inset: 0; z-index: -2;
+    background: radial-gradient(120% 80% at 30% 40%, transparent 0%, rgba(10,10,11,.6) 55%, var(--ink) 100%),
+                linear-gradient(to top, var(--ink) 0%, transparent 35%); }
+  .hexgrid { position: absolute; inset: 0 0 auto 0; height: 46%; z-index: -1; opacity: .16;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16zM28 64v33' fill='none' stroke='%23DDE6F0' stroke-width='1.2'/%3E%3C/svg%3E");
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%); mask-image: linear-gradient(to bottom, #000, transparent); }
+  .grain { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .08; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .progress { position: fixed; top: 0; inset-inline: 0; height: 2px; background: var(--line); z-index: 20; }
+  .progress i { display: block; height: 100%; width: 14%; background: var(--signal); margin-inline-start: 0; }
+
+  nav { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 26px clamp(16px, 4vw, 56px); }
+  .logo { display: flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: 900; font-size: 30px; letter-spacing: .02em; direction: ltr; }
+  .logo b { font-size: 12px; font-weight: 800; letter-spacing: .28em; background: var(--signal); color: #fff; padding: 4px 6px 3px 9px; }
+  .links { display: flex; gap: 34px; font-size: 15px; font-weight: 600; color: var(--mute); }
+  .links a { color: inherit; text-decoration: none; } .links a:first-child { color: var(--bone); }
+  .tools { display: flex; align-items: center; gap: 18px; font-family: var(--f-sans); font-size: 13px; direction: ltr; }
+  .lang { display: flex; border: 1px solid var(--line); } .lang span { padding: 6px 10px; color: var(--mute); } .lang span.on { color: var(--ink); background: var(--bone); }
+  .phone { color: var(--bone); letter-spacing: .04em; }
+
+  .stage { display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 4vw; padding: 2vh clamp(16px, 4vw, 56px) 0; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--mute); margin-bottom: 26px; }
+  .eyebrow::before { content: ""; width: 34px; height: 1px; background: var(--signal); }
+  h1 { font-weight: 900; font-size: clamp(44px, 6.4vw, 104px); line-height: 1.02; letter-spacing: -.01em; }
+  h1 em { font-style: normal; color: #fff; text-shadow: 0 0 18px rgba(221,230,240,.55), 0 0 60px rgba(221,230,240,.25); }
+  h1 .dot { color: var(--signal); }
+  .lede { max-width: 34ch; margin-top: 26px; font-size: 18px; line-height: 1.75; color: var(--mute); }
+  .ctas { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 26px; font-weight: 800; font-size: 16px; text-decoration: none; }
+  .btn.primary { background: var(--signal); color: #fff; }
+  .btn.ghost { border: 1px solid #45454b; color: var(--bone); }
+
+  .frame { position: relative; justify-self: center; height: min(72vh, 680px); aspect-ratio: 576/1024; }
+  .frame img { width: 100%; height: 100%; object-fit: cover; display: block; filter: contrast(1.05) saturate(.92); }
+  .frame::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(238,234,227,.14), 0 40px 120px -20px rgba(0,0,0,.9); }
+  .corner { position: absolute; width: 18px; height: 18px; border-color: var(--bone); border-style: solid; opacity: .7; }
+  .c1 { top: -10px; left: -10px; border-width: 1px 0 0 1px; } .c2 { top: -10px; right: -10px; border-width: 1px 1px 0 0; }
+  .c3 { bottom: -10px; left: -10px; border-width: 0 0 1px 1px; } .c4 { bottom: -10px; right: -10px; border-width: 0 1px 1px 0; }
+  .tag { position: absolute; top: 14px; inset-inline-start: 14px; display: flex; gap: 8px; align-items: center; font-family: var(--f-sans); font-size: 11px; letter-spacing: .2em; direction: ltr; background: rgba(10,10,11,.6); padding: 6px 9px; backdrop-filter: blur(6px); }
+  .tag i { width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 10px var(--signal); }
+  .chapter { position: absolute; bottom: -34px; inset-inline: 0; display: flex; justify-content: space-between; font-family: var(--f-sans); font-size: 12px; color: var(--mute); direction: ltr; letter-spacing: .12em; }
+
+  .rail { display: flex; justify-content: space-between; align-items: end; padding: 7vh clamp(16px, 4vw, 56px) 34px; }
+  .stats { display: flex; gap: 52px; }
+  .stat strong { display: block; font-family: var(--f-display); font-weight: 800; font-size: 52px; line-height: 1; direction: ltr; text-align: start; }
+  .stat span { font-size: 13px; color: var(--mute); }
+  .scroll { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--mute); }
+  .scroll svg { width: 22px; height: 26px; }
+
+  /* spec sheet below the hero */
+  .sheet { padding: 80px clamp(16px, 4vw, 56px); border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+  .sheet h2 { font-size: 13px; letter-spacing: .2em; color: var(--mute); font-family: var(--f-sans); font-weight: 600; margin-bottom: 22px; direction: ltr; text-align: end; }
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sw { height: 120px; padding: 12px; display: flex; flex-direction: column; justify-content: end; font-family: var(--f-sans); font-size: 12px; direction: ltr; border: 1px solid var(--line); }
+  .sw b { font-weight: 600; font-size: 13px; }
+  .type div { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .type small { display: block; font-family: var(--f-sans); font-size: 11px; color: var(--mute); letter-spacing: .14em; margin-bottom: 8px; direction: ltr; text-align: end; }
+
+  @media (max-width: 860px) {
+    .links, .phone { display: none; }
+    .stage { grid-template-columns: 1fr; padding-top: 0; }
+    .frame { order: -1; height: auto; width: 100%; max-width: 100%; aspect-ratio: 9/12; margin-bottom: 8px; }
+    .corner, .chapter { display: none; }
+    h1 { font-size: 46px; }
+    .lede { font-size: 16px; margin-top: 16px; }
+    .ctas { margin-top: 24px; } .btn { flex: 1; justify-content: center; padding: 15px 18px; }
+    .rail { padding-top: 36px; } .stats { gap: 28px; } .stat strong { font-size: 38px; } .scroll { display: none; }
+    .sheet { grid-template-columns: 1fr; }
+    .swatches { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="progress"><i></i></div>
+<section class="hero">
+  <div class="backdrop"></div><div class="hexgrid"></div><div class="vignette"></div><div class="grain"></div>
+  <nav>
+    <div class="logo">MHD <b>AUTO</b></div>
+    <div class="links"><a href="#">السيارات</a><a href="#">الخدمات</a><a href="#">من نحن</a><a href="#">اتصل بنا</a></div>
+    <div class="tools"><div class="lang"><span class="on">AR</span><span>FR</span></div><span class="phone">+213 555 00 00 00</span></div>
+  </nav>
+  <div class="stage">
+    <div>
+      <p class="eyebrow">شراء · بيع · تبديل — الجزائر</p>
+      <h1>سيّارتك القادمة<br>تنتظرك تحت<br><em>الضوء</em><span class="dot">.</span></h1>
+      <p class="lede">سيارات جديدة ومستعملة، مختارة واحدة واحدة. تمويل، ضمان، وتوصيل إلى كل الولايات.</p>
+      <div class="ctas"><a class="btn primary" href="#">تصفّح السيارات ←</a><a class="btn ghost" href="#">واتساب</a></div>
+    </div>
+    <div class="frame">
+      <img src="../public/media/posters/ch1-exterior.webp" alt="">
+      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+      <div class="tag"><i></i>LIVE · SHOWROOM</div>
+      <div class="chapter"><span>01 / 07</span><span>EXTERIOR</span></div>
+    </div>
+  </div>
+  <div class="rail">
+    <div class="stats">
+      <div class="stat"><strong>10</strong><span>سيارات في المعرض</span></div>
+      <div class="stat"><strong>58</strong><span>ولاية للتوصيل</span></div>
+      <div class="stat"><strong>12</strong><span>شهر ضمان</span></div>
+    </div>
+    <div class="scroll"><svg viewBox="0 0 22 26" fill="none" stroke="#9A968F"><path d="M11 1 21 7v12l-10 6L1 19V7z"/><path d="M11 9v7m-3-3 3 3 3-3" stroke="#E8382C"/></svg>مرّر للاكتشاف</div>
+  </div>
+</section>
+
+<section class="sheet">
+  <div>
+    <h2>PALETTE</h2>
+    <div class="swatches">
+      <div class="sw" style="background:#0A0A0B"><b>Ink</b>#0A0A0B</div>
+      <div class="sw" style="background:#131315"><b>Surface</b>#131315</div>
+      <div class="sw" style="background:#E8382C;color:#fff"><b>Signal red</b>#E8382C</div>
+      <div class="sw" style="background:#EEEAE3;color:#0A0A0B"><b>Bone</b>#EEEAE3</div>
+      <div class="sw" style="background:#2A2A2E"><b>Line</b>#2A2A2E</div>
+      <div class="sw" style="background:#9A968F;color:#0A0A0B"><b>Mute</b>#9A968F</div>
+      <div class="sw" style="background:#FF5B4D;color:#0A0A0B"><b>Signal hi</b>#FF5B4D</div>
+      <div class="sw" style="background:#DDE6F0;color:#0A0A0B"><b>Hex light</b>#DDE6F0</div>
+    </div>
+  </div>
+  <div class="type">
+    <h2>TYPE</h2>
+    <div><small>DISPLAY · BIG SHOULDERS DISPLAY 900</small><span style="font-family:var(--f-display);font-weight:900;font-size:64px;line-height:1;direction:ltr;display:block;text-align:end">0 → 250 KM/H</span></div>
+    <div><small>ARABIC · CAIRO 900 / 400</small><span style="font-weight:900;font-size:40px">تحت الضوء</span> <span style="color:var(--mute)">— نص عادي للمواصفات والوصف.</span></div>
+    <div><small>SANS · ARCHIVO 500</small><span style="font-family:var(--f-sans);font-size:20px;direction:ltr;display:block;text-align:end">Votre prochaine voiture vous attend sous la lumière.</span></div>
+  </div>
+</section>
+</body>
+</html>
