@@ -1,4 +1,4 @@
-# MHD AUTO — showroom-dz
+# MIROU AUTO — Khenchela
 
 Cinematic, scroll-driven website for an Algerian car showroom.
 Stack: Next.js 15 (App Router, TypeScript) · Tailwind CSS v4 · GSAP + ScrollTrigger + Flip · Lenis · next-intl (French default / Arabic RTL) · sharp · ffmpeg.
@@ -38,7 +38,7 @@ ffmpeg/ffprobe come from npm (`ffmpeg-static`, `@ffprobe-installer/ffprobe`) —
 
 ## Video pipeline
 
-**Hero film (cinematic opening):** `assets/video/raw/hero-landscape.mp4` (16:9). `npm run video:process -- --only hero` produces web encodes plus two 20 fps WebP frame sequences (1280px desktop, 854px mobile). On the home page the film is **scrubbed by the scroll wheel** on a canvas (cross-blended frames, coarse-first loading that starts on the first scroll), drifts with the cursor, and when it ends the scene dims and the MHD AUTO sign, the showroom name and the brand marks (Simple Icons, CC0) assemble. Choreography constants live at the top of `src/components/HeroCinema.tsx`; HUD shot names in `scripts/video-chapters.json → hero.segments` and `messages/*.json → film.chapters`. The film's last frame stays as the fixed backdrop behind the rest of the site.
+**Hero film (cinematic opening):** `assets/video/raw/hero-landscape.mp4` (16:9). `npm run video:process -- --only hero` produces web encodes plus two 20 fps WebP frame sequences (1280px desktop, 854px mobile). On the home page the film is **scrubbed by the scroll wheel** on a canvas (cross-blended frames, coarse-first loading that starts on the first scroll), drifts with the cursor, and when it ends the scene dims and the MIROU AUTO sign, the showroom name and the brand marks (Simple Icons, CC0) assemble. Choreography constants live at the top of `src/components/HeroCinema.tsx`; HUD shot names in `scripts/video-chapters.json → hero.segments` and `messages/*.json → film.chapters`. The film's last frame stays as the fixed backdrop behind the rest of the site.
 
 **Showroom tour:** `assets/video/raw/showroom-landscape.mp4`. `npm run video:process -- --only tour` builds its frame sequences. On the home page (`#services`) it is scrubbed by the scroll wheel while panels take turns: the showroom intro, each service from `messages/*.json → services.items`, then visit info (hours/address from `site.config.ts`). See `src/components/ShowroomTour.tsx`.
 
@@ -86,7 +86,7 @@ The site is built as a static export (`output: "export"`): no server, no API rou
 
 1. Push the project to GitHub (the raw video and `design/reference` are git-ignored; `assets/video` outputs are committed).
 2. On [vercel.com](https://vercel.com) → **Add New… → Project** → import the repo. Framework preset: **Next.js**; root directory: `showroom-dz` if the repo contains the parent folder.
-3. **Environment variables:** `NEXT_PUBLIC_SITE_URL` (e.g. `https://mhd-auto.dz`), and optionally `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`.
+3. **Environment variables:** `NEXT_PUBLIC_SITE_URL` (set this to the real MIROU AUTO domain), and optionally `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`.
 4. Deploy. `prebuild` copies the media into `public/media` automatically.
 5. **Domain:** Project → Settings → Domains → add your domain and follow the DNS instructions.
 

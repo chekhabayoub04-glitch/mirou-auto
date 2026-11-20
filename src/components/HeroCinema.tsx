@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@/i18n/navigation";
-import { canAutoplayVideo, prefersReducedMotion } from "@/lib/motion";
+import { blur, canAutoplayVideo, isCoarse, prefersReducedMotion } from "@/lib/motion";
 import { createFramePlayer } from "@/lib/frames";
 import { frameUrl, type Hero } from "@/lib/video";
 import { IconArrow, IconWhatsApp } from "./Icons";
@@ -29,8 +29,9 @@ type Copy = {
 };
 
 // Scroll choreography (fractions of the pinned distance).
-const VIDEO_FROM = 0.02;
-const VIDEO_TO = 0.72;
+// The section is ~3 screens tall: the film runs fast and decisively, then the brand card lands.
+const VIDEO_FROM = 0.0;
+const VIDEO_TO = 0.74;
 const STEP = 0.09;
 const delay = (s: number) => ({ animationDelay: `${s}s` });
 const tc = (s: number) => `00:${String(Math.floor(s)).padStart(2, "0")}`;
@@ -47,7 +48,7 @@ function Words({ text, from }: { text: string; from: number }) {
 
 /**
  * Cinematic opening: the hero film is scrubbed by the scroll wheel (canvas frame sequence) and drifts with the cursor;
- * when the film ends, the scene dims and the MHD AUTO sign, the showroom name and the brand marks assemble.
+ * when the film ends, the scene dims and the MIROU AUTO sign, the showroom name and the brand marks assemble.
  */
 export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Hero; brands: Brand[]; copy: Copy; whatsapp: string }) {
   const outer = useRef<HTMLElement>(null);
@@ -70,10 +71,10 @@ export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Her
   useEffect(() => {
     if (!scrub || !outer.current || !canvas.current || !stage.current) return;
     gsap.registerPlugin(ScrollTrigger);
-    // Full 1280px frames everywhere: phones crop the centre of a 16:9 film, so they need every pixel.
-    const frames = seq.desktop;
+    // Portrait screens get the dedicated 3:4 centre cut (full vertical resolution, half the bytes).
+    const frames = window.matchMedia("(orientation: portrait)").matches ? seq.mobile : seq.desktop;
     const urls = Array.from({ length: frames.count }, (_, i) => frameUrl(frames, i));
-    const player = createFramePlayer(canvas.current, urls, { concurrency: canAutoplayVideo() ? 6 : 2, maxDpr: 2 });
+    const player = createFramePlayer(canvas.current, urls, { concurrency: canAutoplayVideo() ? 6 : 2, maxDpr: isCoarse() ? 1.5 : 2, blend: !isCoarse() });
     player.resize();
     // Defer the 200-frame download until the visitor shows intent (or the page is idle),
     // so the first paint (poster + headline) never competes with it.
@@ -103,7 +104,7 @@ export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Her
 
     const tl = gsap.timeline({
       defaults: { ease: "none" },
-      scrollTrigger: { trigger: outer.current, start: "top top", end: "bottom bottom", scrub: 0.7 },
+      scrollTrigger: { trigger: outer.current, start: "top top", end: "bottom bottom", scrub: 0.9 },
       onUpdate: () => {
         player.render(proxy.frame);
         const time = (proxy.frame / (frames.count - 1)) * hero.duration;
@@ -115,11 +116,12 @@ export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Her
       },
     });
     tl.to(proxy, { frame: frames.count - 1, duration: VIDEO_TO - VIDEO_FROM }, VIDEO_FROM)
-      .to(q("[data-a]"), { opacity: 0, y: -60, filter: "blur(10px)", stagger: 0.01, duration: 0.1, ease: "power1.in" }, 0.04)
+      .to(q("[data-a]"), { opacity: 0, y: -60, filter: blur(10), stagger: 0.01, duration: 0.1, ease: "power1.in" }, 0.04)
       .to(q("[data-cue]"), { opacity: 0, duration: 0.04 }, 0.02)
+      .fromTo(q("[data-bar]"), { scaleY: 1 }, { scaleY: 0, duration: 0.12, ease: "power2.inOut" }, VIDEO_TO - 0.06)
       .to(q("[data-dim]"), { opacity: 0.78, duration: 0.1 }, VIDEO_TO - 0.04)
       .to(q("[data-hud]"), { opacity: 0, duration: 0.06 }, VIDEO_TO)
-      .fromTo(q("[data-logo]"), { opacity: 0, scale: 1.35, filter: "blur(18px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.1, ease: "power3.out" }, VIDEO_TO + 0.02)
+      .fromTo(q("[data-logo]"), { opacity: 0, scale: 1.35, filter: blur(18) }, { opacity: 1, scale: 1, filter: blur(0), duration: 0.1, ease: "power3.out" }, VIDEO_TO + 0.02)
       .fromTo(q("[data-c]"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.06, stagger: 0.02, ease: "power2.out" }, VIDEO_TO + 0.08)
       .fromTo(q("[data-brand]"), { opacity: 0, y: 40, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.06, stagger: 0.012, ease: "back.out(1.6)" }, VIDEO_TO + 0.13)
       .fromTo(q("[data-enter]"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.05 }, 0.93)
@@ -176,14 +178,17 @@ export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Her
   };
 
   const first = frameUrl(seq.desktop, 0);
+  const firstPortrait = frameUrl(seq.mobile, 0);
 
   return (
-    <section ref={outer} aria-labelledby="hero-title" className="relative h-[460svh] motion-reduce:h-auto">
+    <section ref={outer} aria-labelledby="hero-title" className="relative h-[300svh] motion-reduce:h-auto">
       <div ref={stage} className="sticky top-0 h-svh overflow-hidden motion-reduce:relative motion-reduce:h-auto">
         {/* Film */}
         <div ref={drift} aria-hidden className="absolute inset-0 will-change-transform [transform:scale(1.07)]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={first} alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+          <picture>
+            <source media="(orientation: portrait)" srcSet={firstPortrait} />
+            <img src={first} alt="" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+          </picture>
           <canvas ref={canvas} role="img" aria-label={copy.videoLabel} className="absolute inset-0 h-full w-full" />
         </div>
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,10,11,.9)_0%,rgba(10,10,11,.35)_42%,rgba(10,10,11,0)_68%),linear-gradient(to_bottom,rgba(10,10,11,.6),transparent_22%)]" />
@@ -192,6 +197,9 @@ export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Her
         <div aria-hidden data-a className="absolute inset-0 bg-[linear-gradient(to_top,#0a0a0b_0%,rgba(10,10,11,.92)_40%,rgba(10,10,11,.6)_62%,rgba(10,10,11,.1)_82%)] lg:hidden" />
         <div aria-hidden data-dim className="absolute inset-0 bg-ink opacity-0" />
         <div aria-hidden className="grain absolute inset-0" />
+        {/* Anamorphic letterbox: frames the film like a cinema screen, then opens up for the brand card */}
+        <div aria-hidden data-bar className="absolute inset-x-0 top-0 h-[7svh] origin-top bg-black motion-reduce:hidden lg:h-[9svh]" />
+        <div aria-hidden data-bar className="absolute inset-x-0 bottom-0 h-[7svh] origin-bottom bg-black motion-reduce:hidden lg:h-[9svh]" />
 
         {/* HUD */}
         <div data-hud className="motion-reduce:hidden">
@@ -278,13 +286,14 @@ export default function HeroCinema({ hero, brands, copy, whatsapp }: { hero: Her
         {/* Act II — the sign, the name, the brands */}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-4 text-center motion-reduce:pointer-events-auto motion-reduce:relative motion-reduce:inset-auto motion-reduce:bg-ink/85 motion-reduce:py-24 [&_a]:pointer-events-auto">
           <div data-logo dir="ltr" className="flex items-center gap-[1.5vw] opacity-0 motion-reduce:opacity-100">
-            <span className="font-display text-[clamp(84px,15vw,250px)] font-black leading-[.8] tracking-tight text-white [text-shadow:0_0_40px_rgba(221,230,240,.35),0_0_120px_rgba(221,230,240,.2)]">MHD</span>
+            <span className="font-display text-[clamp(64px,12vw,200px)] font-black leading-[.8] tracking-tight text-white [text-shadow:0_0_40px_rgba(221,230,240,.35),0_0_120px_rgba(221,230,240,.2)]">MIROU</span>
             <span className="self-end bg-signal px-[.4em] py-[.12em] font-display text-[clamp(22px,3.6vw,60px)] font-extrabold tracking-[.18em] text-white shadow-[0_0_40px_rgba(212,46,36,.55)]">AUTO</span>
           </div>
           <p data-c className="mt-6 font-sans text-[clamp(12px,1.1vw,16px)] font-semibold uppercase tracking-[.5em] text-bone/85 opacity-0 motion-reduce:opacity-100 rtl:font-ar rtl:normal-case rtl:tracking-normal">
             {copy.tagline}
           </p>
           <p data-c className="mt-2 text-sm text-mute opacity-0 motion-reduce:opacity-100">{copy.city}</p>
+          <span data-c aria-hidden className="brand-band mt-8 block w-[min(420px,70vw)] opacity-0 motion-reduce:opacity-100" />
 
           <p data-c className="mt-12 text-xs font-semibold tracking-[.25em] text-bone/60 opacity-0 motion-reduce:opacity-100 rtl:tracking-normal">
             {copy.brandsTitle}

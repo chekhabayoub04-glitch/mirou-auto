@@ -18,9 +18,16 @@ function loadOrder(n: number) {
 
 export type FramePlayer = { start: () => void; render: (position: number) => void; resize: () => void; destroy: () => void };
 
-export function createFramePlayer(canvas: HTMLCanvasElement, urls: string[], { concurrency = 6, maxDpr = 1.25 } = {}): FramePlayer {
+type Frame = ImageBitmap | HTMLImageElement;
+const dims = (f: Frame) => (f instanceof HTMLImageElement ? [f.naturalWidth, f.naturalHeight] : [f.width, f.height]);
+
+/**
+ * blend: cross-fade neighbouring frames (two draws per update). Phones turn it off — one draw keeps scrubbing at 60fps.
+ * Frames are kept as decoded ImageBitmaps where supported, so drawing never waits on a lazy decode.
+ */
+export function createFramePlayer(canvas: HTMLCanvasElement, urls: string[], { concurrency = 6, maxDpr = 1.25, blend = true } = {}): FramePlayer {
   const ctx = canvas.getContext("2d", { alpha: false })!;
-  const imgs: (HTMLImageElement | null)[] = new Array(urls.length).fill(null);
+  const imgs: (Frame | null)[] = new Array(urls.length).fill(null);
   let alive = true;
   let started = false;
   let last = "";
@@ -35,10 +42,11 @@ export function createFramePlayer(canvas: HTMLCanvasElement, urls: string[], { c
     return -1;
   };
 
-  const cover = (img: HTMLImageElement) => {
-    const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
-    const w = img.naturalWidth * s;
-    const h = img.naturalHeight * s;
+  const cover = (img: Frame) => {
+    const [iw, ih] = dims(img);
+    const s = Math.max(canvas.width / iw, canvas.height / ih);
+    const w = iw * s;
+    const h = ih * s;
     ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
   };
 
@@ -55,8 +63,9 @@ export function createFramePlayer(canvas: HTMLCanvasElement, urls: string[], { c
           img.src = urls[i];
           try {
             await img.decode();
+            const frame: Frame = "createImageBitmap" in window ? await createImageBitmap(img).catch(() => img) : img;
             if (alive) {
-              imgs[i] = img;
+              imgs[i] = frame;
               if (Math.abs(i - want) < 16) player.render(want);
             }
           } catch {
@@ -73,7 +82,7 @@ export function createFramePlayer(canvas: HTMLCanvasElement, urls: string[], { c
       const i = Math.floor(p);
       const a = imgs[i] ? i : nearest(i);
       if (a < 0) return;
-      const t = imgs[i] && imgs[i + 1] ? p - i : 0;
+      const t = blend && imgs[i] && imgs[i + 1] ? p - i : 0;
       const key = `${a}:${t.toFixed(2)}:${canvas.width}`;
       if (key === last) return;
       last = key;
@@ -95,6 +104,7 @@ export function createFramePlayer(canvas: HTMLCanvasElement, urls: string[], { c
     },
     destroy() {
       alive = false;
+      imgs.forEach((f) => f instanceof ImageBitmap && f.close());
     },
   };
   return player;

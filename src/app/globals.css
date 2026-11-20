@@ -11,6 +11,9 @@
   --color-signal-hi: #ff5b4d;
   --color-hex: #dde6f0;
   --color-wa: #25d366;
+  /* Storefront palette: copper of the door frames, navy of the glass doors, white of the sign panel */
+  --color-copper: #c27a55;
+  --color-navy: #132128;
 
   --font-display: var(--font-big-shoulders), var(--font-cairo), system-ui, sans-serif;
   --font-sans: var(--font-archivo), var(--font-cairo), system-ui, sans-serif;
@@ -34,6 +37,9 @@
   }
   html[lang="ar"] body {
     font-family: var(--font-ar);
+  }
+  html {
+    scrollbar-color: var(--color-signal) var(--color-ink);
   }
   ::selection {
     background: var(--color-signal);
@@ -72,11 +78,33 @@
     letter-spacing: 0.04em;
     color: var(--color-mute);
   }
+  /* Signature rule: the red sign + copper door frame of the showroom, as one short bar */
   .eyebrow::before {
     content: "";
-    width: 32px;
-    height: 1px;
+    width: 36px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-signal) 0 66%, var(--color-copper) 66% 100%);
+  }
+  [dir="rtl"] .eyebrow::before {
+    background: linear-gradient(270deg, var(--color-signal) 0 66%, var(--color-copper) 66% 100%);
+  }
+  /* The facade's tile band, reduced to a thin repeating diamond line — used as a section divider */
+  .brand-band {
+    height: 10px;
+    background:
+      linear-gradient(var(--color-line), var(--color-line)) top / 100% 1px no-repeat,
+      linear-gradient(var(--color-line), var(--color-line)) bottom / 100% 1px no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M8 1.5 12 5 8 8.5 4 5z' fill='%23c27a55' fill-opacity='.55'/%3E%3C/svg%3E") center / 16px 10px repeat-x;
+  }
+  /* Red plate, as on the sign — wraps short labels like "AUTO" */
+  .plate {
+    display: inline-block;
     background: var(--color-signal);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    padding: 0.12em 0.4em;
   }
   .index-tag {
     font-family: var(--font-display);

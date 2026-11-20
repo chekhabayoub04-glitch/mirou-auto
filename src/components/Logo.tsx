@@ -1,6 +1,6 @@
 import { siteConfig } from "~/site.config";
 
-/** Wordmark echoing the facade sign: "MHD" + red "AUTO" tag. */
+/** Wordmark echoing the facade sign: "MIROU" + red "AUTO" tag. */
 export default function Logo({ className = "" }: { className?: string }) {
   const [first, ...rest] = siteConfig.name.split(" ");
   return (

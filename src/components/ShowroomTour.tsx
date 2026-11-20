@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@/i18n/navigation";
-import { canAutoplayVideo, prefersReducedMotion } from "@/lib/motion";
+import { blur, canAutoplayVideo, isCoarse, prefersReducedMotion } from "@/lib/motion";
 import { createFramePlayer } from "@/lib/frames";
 import { frameUrl, type Tour } from "@/lib/video";
 import { IconArrow, IconClock, IconPin, SERVICE_ICONS } from "./Icons";
@@ -47,7 +47,7 @@ export default function ShowroomTour({ tour, services, hours, address, copy }: {
     gsap.registerPlugin(ScrollTrigger);
     const frames = tour.frames.desktop; // full resolution on phones too (they crop the centre)
     const urls = Array.from({ length: frames.count }, (_, i) => frameUrl(frames, i));
-    const player = createFramePlayer(canvas.current, urls, { concurrency: canAutoplayVideo() ? 6 : 2, maxDpr: 2 });
+    const player = createFramePlayer(canvas.current, urls, { concurrency: canAutoplayVideo() ? 6 : 2, maxDpr: isCoarse() ? 1.5 : 2, blend: !isCoarse() });
     player.resize();
     const onResize = () => player.resize();
     window.addEventListener("resize", onResize);
@@ -75,11 +75,11 @@ export default function ShowroomTour({ tour, services, hours, address, copy }: {
     });
     tl.to(proxy, { frame: frames.count - 1, duration: 1 }, 0);
     const show = (sel: string, at: number, hold: number, final = false) => {
-      tl.fromTo(q(sel), { opacity: 0, y: 50, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.05, stagger: 0.01, ease: "power2.out" }, at);
-      if (!final) tl.to(q(sel), { opacity: 0, y: -40, filter: "blur(8px)", duration: 0.04, ease: "power1.in" }, at + hold);
+      tl.fromTo(q(sel), { opacity: 0, y: 50, filter: blur(10) }, { opacity: 1, y: 0, filter: blur(0), duration: 0.05, stagger: 0.01, ease: "power2.out" }, at);
+      if (!final) tl.to(q(sel), { opacity: 0, y: -40, filter: blur(8), duration: 0.04, ease: "power1.in" }, at + hold);
     };
     // The intro is visible on arrival; it only leaves.
-    tl.to(q("[data-p='intro']"), { opacity: 0, y: -40, filter: "blur(8px)", duration: 0.04, ease: "power1.in" }, slot - 0.03);
+    tl.to(q("[data-p='intro']"), { opacity: 0, y: -40, filter: blur(8), duration: 0.04, ease: "power1.in" }, slot - 0.03);
     // Each panel starts leaving just before the next arrives, so there is never an empty screen.
     services.forEach((_, i) => show(`[data-p='s${i}']`, slot * (i + 1), slot - 0.025));
     show("[data-p='visit']", slot * (n + 1), 0, true);
@@ -99,7 +99,7 @@ export default function ShowroomTour({ tour, services, hours, address, copy }: {
   const hidden = "opacity-0 motion-reduce:opacity-100";
 
   return (
-    <section id="services" ref={outer} aria-labelledby="tour-title" className="relative h-[620svh] scroll-mt-0 motion-reduce:h-auto">
+    <section id="services" ref={outer} aria-labelledby="tour-title" className="relative h-[440svh] lg:h-[620svh] scroll-mt-0 motion-reduce:h-auto">
       <div ref={stage} className="sticky top-0 h-svh overflow-hidden motion-reduce:relative motion-reduce:h-auto">
         {/* Film */}
         <div aria-hidden className="absolute inset-0 motion-reduce:fixed motion-reduce:-z-10">

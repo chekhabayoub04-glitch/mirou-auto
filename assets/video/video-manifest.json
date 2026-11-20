@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-24T20:01:45.067Z",
+  "generatedAt": "2026-11-20T20:28:56.246Z",
   "publicBase": "/media",
   "source": {
     "file": "assets/video/raw/source.mp4",
@@ -14,7 +14,7 @@
     "maxHeight": 1024
   },
   "hero": {
-    "duration": 10.006,
+    "duration": 10.027,
     "width": 1280,
     "height": 720,
     "segments": [
@@ -24,11 +24,11 @@
       },
       {
         "id": "sign",
-        "start": 3.3
+        "start": 4.2
       },
       {
         "id": "showroom",
-        "start": 5.8
+        "start": 7.4
       }
     ],
     "sources": [
@@ -38,7 +38,7 @@
         "width": 1280,
         "height": 720,
         "duration": 10,
-        "bytes": 2064016
+        "bytes": 2218170
       },
       {
         "src": "/media/chapters/hero/hero-720.mp4",
@@ -46,7 +46,7 @@
         "width": 1280,
         "height": 720,
         "duration": 10,
-        "bytes": 2853992
+        "bytes": 2729469
       }
     ],
     "frames": {
@@ -55,29 +55,29 @@
         "pattern": "f_{index}.webp",
         "indexPad": 4,
         "startIndex": 1,
-        "count": 200,
-        "fps": 20,
-        "width": 1280,
-        "height": 720,
-        "totalBytes": 6858890
+        "count": 159,
+        "fps": 16,
+        "width": 1920,
+        "height": 1080,
+        "totalBytes": 16635180
       },
       "mobile": {
         "base": "/media/frames/hero-mobile",
         "pattern": "f_{index}.webp",
         "indexPad": 4,
         "startIndex": 1,
-        "count": 200,
-        "fps": 20,
-        "width": 854,
-        "height": 480,
-        "totalBytes": 4470938
+        "count": 159,
+        "fps": 16,
+        "width": 810,
+        "height": 1080,
+        "totalBytes": 7239654
       }
     },
     "poster": {
       "webp": "/media/posters/hero.webp",
       "avif": "/media/posters/hero.avif",
-      "width": 1280,
-      "height": 720
+      "width": 1920,
+      "height": 1080
     }
   },
   "tour": {

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { siteConfig } from "~/site.config";
+import { withBase } from "@/lib/base";
 
-const SEEN = "mhd-intro-seen";
-const SRC = { portrait: "/media/intro/intro-mobile.mp4", landscape: "/media/intro/intro-desktop.mp4" };
+const SEEN = "mirou-intro-seen";
+const SRC = { portrait: withBase("/media/intro/intro-mobile.mp4"), landscape: withBase("/media/intro/intro-desktop.mp4") };
 const START_TIMEOUT = 6000; // still nothing to show by then (very slow network): skip straight to the hero
 const MAX_LENGTH = 15000;
 const FADE = 1400; // fog swallows the last frame, then the fog itself clears onto the hero
@@ -22,6 +24,7 @@ v.muted=true;v.src=matchMedia("(orientation: portrait)").matches?"${SRC.portrait
 export default function IntroFilm({ enter }: { enter: string }) {
   const video = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<"playing" | "tap" | "leaving" | "gone">("playing");
+  const [brand, ...suffix] = siteConfig.name.split(" ");
 
   useEffect(() => {
     const root = document.documentElement;
@@ -119,7 +122,7 @@ export default function IntroFilm({ enter }: { enter: string }) {
           >
             <span className="flex flex-col items-center gap-5">
               <span dir="ltr" className="flex items-center gap-2 font-display text-5xl font-black text-white">
-                MHD <span className="bg-signal px-2 py-0.5 text-base tracking-[.18em]">AUTO</span>
+                {brand} <span className="bg-signal px-2 py-0.5 text-base tracking-[.18em]">{suffix.join(" ")}</span>
               </span>
               <span className="min-h-11 rounded-full border border-white/40 px-7 py-3 text-sm font-semibold text-white">{enter}</span>
             </span>

@@ -121,16 +121,26 @@ async function stillToPosters(png, name) {
   return { webp: publicUrl(webp), avif: publicUrl(avif), width: meta.width, height: meta.height };
 }
 
-/** Scroll-scrub WebP frame sequences, desktop 1280px + mobile 854px (no fades: scrubs start and end on real frames). */
-function scrubFrames(file, name, fps) {
+const DEFAULT_FRAMES = { desktop: { size: [1280, 720], quality: 64 }, mobile: { size: [854, 480], quality: 64 } };
+
+/** Filter chain for one rendition: scale (+ optional centre crop, e.g. a portrait cut for phones), optional colour grade, sharpen. */
+const frameFilter = ({ size: [w, h], crop }, grade) =>
+  [`scale=${w}:${h}:flags=lanczos`, grade, "unsharp=5:5:0.45", crop && `crop=${crop[0]}:${crop[1]}`].filter(Boolean).join(",");
+
+/**
+ * Scroll-scrub WebP frame sequences (no fades: scrubs start and end on real frames).
+ * `spec` overrides per rendition: { desktop|mobile: { size: [w,h], crop?: [w,h], quality } }.
+ */
+function scrubFrames(file, name, fps, spec = DEFAULT_FRAMES, grade = "") {
   const frames = {};
-  for (const [key, [w, h]] of Object.entries({ desktop: [1280, 720], mobile: [854, 480] })) {
+  for (const [key, r] of Object.entries(spec)) {
     const fdir = path.join(OUT.frames, key === "desktop" ? name : `${name}-mobile`);
     fs.rmSync(fdir, { recursive: true, force: true });
     fs.mkdirSync(fdir, { recursive: true });
-    run(FFMPEG, ["-hide_banner", "-y", "-i", file, "-an", "-vf", `fps=${fps},scale=${w}:${h}:flags=lanczos,unsharp=5:5:0.55`, "-c:v", "libwebp", "-quality", "64", "-compression_level", "6", path.join(fdir, "f_%04d.webp")]);
+    run(FFMPEG, ["-hide_banner", "-y", "-i", file, "-an", "-vf", `fps=${fps},${frameFilter(r, grade)}`, "-c:v", "libwebp", "-quality", String(r.quality), "-compression_level", "6", path.join(fdir, "f_%04d.webp")]);
     const files = fs.readdirSync(fdir).filter((f) => f.endsWith(".webp"));
     const bytes = files.reduce((n, f) => n + fs.statSync(path.join(fdir, f)).size, 0);
+    const [w, h] = r.crop ?? r.size;
     frames[key] = { base: publicUrl(fdir), pattern: "f_{index}.webp", indexPad: 4, startIndex: 1, count: files.length, fps, width: w, height: h, totalBytes: bytes };
     console.log(`  ${name} frames ${key}: ${files.length} × ${w}px = ${(bytes / 1048576).toFixed(1)}MB`);
   }
@@ -152,7 +162,8 @@ async function makeHero(hero) {
   const dir = path.join(OUT.chapters, "hero");
   fs.mkdirSync(dir, { recursive: true });
   const fadeOut = (info.duration - hero.fade.out).toFixed(2);
-  const vf = `scale=-2:720:flags=lanczos,fade=t=in:st=0:d=${hero.fade.in},fade=t=out:st=${fadeOut}:d=${hero.fade.out}`;
+  const grade = hero.grade ?? "";
+  const vf = [`scale=-2:720:flags=lanczos`, grade, `fade=t=in:st=0:d=${hero.fade.in},fade=t=out:st=${fadeOut}:d=${hero.fade.out}`].filter(Boolean).join(",");
   const base = ["-hide_banner", "-y", "-i", file, "-an", "-sn", "-dn", "-map_metadata", "-1", "-vf", vf];
   const mp4 = path.join(dir, "hero-720.mp4");
   const webm = path.join(dir, "hero-720.webm");
@@ -161,10 +172,12 @@ async function makeHero(hero) {
   const sources = [[webm, 'video/webm; codecs="vp9"'], [mp4, "video/mp4"]]
     .map(([f, type]) => ({ src: publicUrl(f), type, ...probe(f) }))
     .sort((x, y) => x.bytes - y.bytes);
-  const still = spawnSync(FFMPEG, ["-hide_banner", "-loglevel", "error", "-ss", String(hero.poster), "-i", file, "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"], { maxBuffer: 64 * 1024 * 1024 }).stdout;
+  const posterVf = frameFilter((hero.frames ?? DEFAULT_FRAMES).desktop, grade);
+  const still = spawnSync(FFMPEG, ["-hide_banner", "-loglevel", "error", "-ss", String(hero.poster), "-i", file, "-frames:v", "1", "-vf", posterVf, "-f", "image2pipe", "-c:v", "png", "-"], { maxBuffer: 64 * 1024 * 1024 }).stdout;
   console.log(`  hero: ${sources.map((x) => `${x.type.split(";")[0]} ${(x.bytes / 1048576).toFixed(1)}MB`).join(", ")}`);
 
-  return { duration: info.duration, width: info.width, height: info.height, segments: hero.segments, sources, frames: scrubFrames(file, "hero", hero.frameFps), poster: await stillToPosters(still, "hero") };
+  const frames = scrubFrames(file, "hero", hero.frameFps, hero.frames ?? DEFAULT_FRAMES, grade);
+  return { duration: info.duration, width: info.width, height: info.height, segments: hero.segments, sources, frames, poster: await stillToPosters(still, "hero") };
 }
 
 async function main() {

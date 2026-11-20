@@ -59,8 +59,8 @@
     }
   ],
   "hero": {
-    "file": "assets/video/raw/hero-landscape.mp4",
-    "poster": 2.6,
+    "file": "assets/video/raw/hero-storefront.mp4",
+    "poster": 0,
     "fade": {
       "in": 0.5,
       "out": 0.7
@@ -72,14 +72,35 @@
       },
       {
         "id": "sign",
-        "start": 3.3
+        "start": 4.2
       },
       {
         "id": "showroom",
-        "start": 5.8
+        "start": 7.4
       }
     ],
-    "frameFps": 20
+    "frameFps": 16,
+    "grade": "hqdn3d=2:2:4:4,eq=contrast=1.08:saturation=1.12:gamma=0.97,colorbalance=rs=-0.04:gs=-0.01:bs=0.05:rh=0.05:gh=0.01:bh=-0.04",
+    "frames": {
+      "desktop": {
+        "size": [
+          1920,
+          1080
+        ],
+        "quality": 56
+      },
+      "mobile": {
+        "size": [
+          1920,
+          1080
+        ],
+        "crop": [
+          810,
+          1080
+        ],
+        "quality": 60
+      }
+    }
   },
   "tour": {
     "file": "assets/video/raw/showroom-landscape.mp4",

@@ -32,7 +32,6 @@ export function dealerLd(locale: "ar" | "fr") {
       postalCode: address.postalCode,
       addressCountry: address.country,
     },
-    geo: { "@type": "GeoCoordinates", latitude: address.geo.lat, longitude: address.geo.lng },
     openingHoursSpecification: hours
       .filter((h) => h.open)
       .map((h) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: DAY_MAP[h.days], opens: h.open, closes: h.close })),

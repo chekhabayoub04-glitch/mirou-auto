@@ -1,4 +1,7 @@
-import manifest from "~/assets/video/video-manifest.json";
+import rawManifest from "~/assets/video/video-manifest.json";
+import { rebase } from "./base";
+
+const manifest = rebase(rawManifest);
 
 export type VideoSource = { src: string; type: string; width: number; height: number; bytes: number };
 export type FrameSequence = {

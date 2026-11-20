@@ -7,7 +7,7 @@ export async function Stats() {
   const t = await getTranslations();
   const stats = t.raw("stats") as { value: string; label: string }[];
   return (
-    <section aria-label="MHD AUTO" className="container-x">
+    <section aria-label="MIROU AUTO" className="container-x">
       <dl className="grid grid-cols-2 gap-px border-y border-line bg-line lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="flex flex-col-reverse gap-2 bg-ink px-4 py-10 first:ps-0 lg:px-8 lg:py-14">

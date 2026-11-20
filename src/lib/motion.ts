@@ -13,6 +13,11 @@ export function canAutoplayVideo() {
   return !prefersReducedMotion();
 }
 
+/** Touch-first screens: skip costly per-frame effects (CSS blur filters) and draw the canvas at a lower density. */
+export const isCoarse = () => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+/** Blur value for scroll-scrubbed reveals: real blur on desktop, none on phones (keeps scrubbing at 60fps). */
+export const blur = (px: number) => (isCoarse() ? "blur(0px)" : `blur(${px}px)`);
+
 export const isDesktop = () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches;
 
 /** Canvas frame-sequence scrubbing: desktop, full data, motion allowed. */

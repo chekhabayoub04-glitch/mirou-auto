@@ -5,6 +5,7 @@ import Inventory from "@/components/Inventory";
 import { alternates, localePath } from "@/lib/paths";
 import ContactSection from "@/components/ContactSection";
 import { JsonLd, breadcrumbLd } from "@/components/JsonLd";
+import { siteConfig } from "~/site.config";
 
 const path = (locale: string) => localePath(locale, "/cars");
 
@@ -25,7 +26,7 @@ export default async function CarsPage({ params }: { params: Promise<{ locale: s
   const tn = await getTranslations("nav");
   return (
     <div className="veil pt-[72px]">
-      <JsonLd data={breadcrumbLd([{ name: "MHD AUTO", path: localePath(locale) }, { name: tn("cars"), path: path(locale) }])} />
+      <JsonLd data={breadcrumbLd([{ name: siteConfig.name, path: localePath(locale) }, { name: tn("cars"), path: path(locale) }])} />
       <Inventory cars={cars} headingLevel="h1" />
       <ContactSection />
     </div>

@@ -1,17 +1,17 @@
 {
   "meta": {
-    "title": "MHD AUTO — Showroom automobile à Alger | Neuf & occasion premium",
-    "description": "Showroom MHD AUTO à Alger : véhicules neufs et d’occasion sélectionnés, expertisés et garantis. Financement, reprise et livraison dans les 58 wilayas.",
+    "title": "MIROU AUTO — Vente, achat et location de voitures à Khenchela",
+    "description": "Découvrez MIROU AUTO à Khenchela. Contactez-nous pour connaître les véhicules disponibles à la vente ou à la location.",
     "carsTitle": "Nos véhicules disponibles",
-    "carsDescription": "Découvrez la sélection MHD AUTO : citadines, compactes, SUV, pick-up et berlines premium. Filtrez par marque, budget, motorisation et année.",
-    "carDescription": "{car} {year} — {price}. {fuel}, {gearbox}, {power} ch. Disponible maintenant chez MHD AUTO."
+    "carsDescription": "Découvrez les véhicules MIROU AUTO : filtrez par marque, budget, motorisation et année.",
+    "carDescription": "{car} {year} — {price}. {fuel}, {gearbox}, {power} ch. Disponible chez MIROU AUTO."
   },
   "a11y": {
     "skip": "Aller au contenu",
     "menu": "Menu",
     "close": "Fermer",
     "language": "Langue",
-    "videoLabel": "Images du showroom MHD AUTO"
+    "videoLabel": "Images du showroom MIROU AUTO"
   },
   "nav": {
     "cars": "Voitures",
@@ -21,11 +21,11 @@
     "request": "Demander"
   },
   "hero": {
-    "eyebrow": "Showroom automobile — Alger",
+    "eyebrow": "Achat · vente · location — Khenchela",
     "line1": "Votre prochaine voiture",
     "line2": "vous attend sous",
     "glow": "la lumière",
-    "lede": "Neuf et occasion premium, choisis un à un, expertisés et garantis. Financement, reprise et livraison dans les 58 wilayas.",
+    "lede": "Découvrez les véhicules MIROU AUTO à Khenchela et contactez-nous pour connaître les disponibilités en vente et en location.",
     "ctaCars": "Découvrir la collection",
     "ctaWhatsapp": "Nous écrire",
     "statCars": "voitures au showroom",
@@ -214,7 +214,7 @@
       {
         "key": "warranty",
         "title": "Garantie",
-        "text": "Garantie constructeur sur le neuf ; garantie MHD 12 mois moteur et boîte sur l’occasion."
+        "text": "Contactez-nous pour connaître les conditions de garantie applicables à chaque véhicule."
       },
       {
         "key": "delivery",
@@ -226,7 +226,7 @@
   "about": {
     "kicker": "À propos",
     "title": "Un vrai showroom. De vraies voitures.",
-    "text": "MHD AUTO, c’est un showroom au cœur d’Alger et une conviction : chaque voiture doit être choisie, contrôlée et présentée telle qu’elle est. Pas de mauvaise surprise — venez la voir de vos propres yeux.",
+    "text": "MIROU AUTO vous accueille à Khenchela. Découvrez les véhicules disponibles et contactez-nous pour en savoir plus — venez les voir par vous-même.",
     "hours": "Horaires",
     "days": {
       "sat-thu": "Samedi — Jeudi",
@@ -259,8 +259,8 @@
     "whatsapp": "WhatsApp",
     "email_label": "E-mail",
     "testDrive": "Réserver un essai",
-    "waGeneric": "Bonjour MHD AUTO, je souhaite me renseigner sur une voiture.",
-    "waCar": "Bonjour MHD AUTO, je suis intéressé(e) par {car} ({price}). Lien : {url}",
+    "waGeneric": "Bonjour MIROU AUTO, je souhaite me renseigner sur une voiture.",
+    "waCar": "Bonjour MIROU AUTO, je suis intéressé(e) par {car} ({price}). Lien : {url}",
     "waLead": "Nouvelle demande du site\nNom : {name}\nTéléphone : {phone}\nVoiture : {car}\nDate : {date}\nMessage : {message}"
   },
   "detail": {
@@ -280,7 +280,7 @@
     "request": "Demander"
   },
   "footer": {
-    "tagline": "Showroom automobile à Alger — neuf et occasion premium, achat, vente et reprise.",
+    "tagline": "MIROU AUTO — achat, vente et location de voitures à Khenchela.",
     "rights": "Tous droits réservés.",
     "notice": "Prix et caractéristiques indicatifs, susceptibles d'évoluer sans préavis."
   },
@@ -296,7 +296,7 @@
   "intro": {
     "scroll": "Faites défiler pour entrer",
     "tagline": "Showroom automobile",
-    "city": "Alger · Algérie",
+    "city": "Khenchela · Algérie",
     "brands": "Les marques du showroom",
     "cta": "Entrer dans le showroom",
     "skip": "Passer"

@@ -15,7 +15,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LIST = JSON.parse(fs.readFileSync(path.join(ROOT, "scripts/car-photos.json"), "utf8"));
 const DATA = path.join(ROOT, "data/cars.json");
 const WIDTH = 1920; // a standard Commons thumbnail width
-const UA = "MHD-AUTO-website/1.0 (image import script)";
+const UA = "Mirou-Auto-website/1.0 (image import script)";
 const onlyIdx = process.argv.indexOf("--only");
 const only = onlyIdx > -1 ? process.argv[onlyIdx + 1] : null;
 

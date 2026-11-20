@@ -20,7 +20,8 @@ export default async function Footer() {
   const { contact, address, socials } = siteConfig;
 
   return (
-    <footer className="container-x relative border-t border-line bg-ink pb-28 pt-16 lg:pb-12">
+    <footer className="container-x relative bg-ink pb-28 pt-16 lg:pb-12">
+      <div aria-hidden className="brand-band absolute inset-x-0 top-0" />
       <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Logo />

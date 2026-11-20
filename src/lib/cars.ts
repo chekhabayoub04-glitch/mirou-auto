@@ -1,4 +1,7 @@
-import data from "~/data/cars.json";
+import rawData from "~/data/cars.json";
+import { rebase } from "./base";
+
+const data = rebase(rawData);
 
 export type Fuel = "petrol" | "diesel" | "hybrid" | "electric";
 export type Gearbox = "manual" | "automatic";
